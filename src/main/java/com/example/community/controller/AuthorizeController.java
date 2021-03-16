@@ -30,7 +30,7 @@ public class AuthorizeController {
     private UserMapper userMapper;
 
 
-    @GetMapping("callback")
+    @GetMapping("/callback")
     public String callback(@RequestParam(name = "code")String code,
                            @RequestParam(name = "state")String state,
                             HttpServletRequest request,
