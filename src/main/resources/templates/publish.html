@@ -17,7 +17,7 @@
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                 <span class="sr-only">问答社区</span>
             </button>
-            <a class="navbar-brand" href="#">问答社区</a>
+            <a class="navbar-brand" href="/index">问答社区</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -63,7 +63,7 @@
                     </div>
                     <div class="form-group">
                         <label for="tags">添加标签</label>
-                        <input type="text" class="form-control" id="tags" name="tags" placeholder="输入标签以，分隔"/>
+                        <input type="text" class="form-control" id="tags" name="tags" placeholder="输入标签以|分隔"/>
                     </div>
                     <span class="alert alert-danger" th:text="${error}" th:if="${error != null}"></span>
                     <button type="submit" class="btn btn-success btn-publish">确认发布</button>
