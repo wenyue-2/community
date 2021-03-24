@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"></plugin>
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/db3?serverTimezone=GMT%2B8&amp;nullCatalogMeansCurrent=true"
+                        userId="root"
+                        password="mysql">
+        </jdbcConnection>
+        <!--Java类型解析-->
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <!--java model生成器 JavaBean-->
+        <javaModelGenerator targetPackage="com.example.community.model" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <!--sql映射生成器，mapper-->
+        <sqlMapGenerator targetPackage="mappers"  targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+        <!--Java mapper接口生成器-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.example.community.mapper"  targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+        <!--将数据库的表与生成的对应-->
+        <!--domainObjectName - 生成对象的名称-->
+        <table tableName="user" domainObjectName="User" >
+            <!--true - 列名 false - 驼峰标识-->
+            <property name="useActualColumnNames" value="false"/>
+            <!--是否要返回自动生成的key-->
+            <generatedKey column="id" sqlStatement="MySql" identity="false" />
+            <!--固定列的命名-->
+            <!--<columnOverride column="DATE_FIELD" property="startDate" />-->
+            <!--<ignoreColumn column="FRED" />-->
+            <!--<columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />-->
+        </table>
+        <table tableName="question" domainObjectName="Question" >
+            <!--true - 列名 false - 驼峰标识-->
+            <property name="useActualColumnNames" value="false"/>
+            <!--是否要返回自动生成的key-->
+            <generatedKey column="id" sqlStatement="MySql" identity="false" />
+            <!--固定列的命名-->
+            <!--<columnOverride column="DATE_FIELD" property="startDate" />-->
+            <!--<ignoreColumn column="FRED" />-->
+            <!--<columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />-->
+        </table>
+    </context>
+</generatorConfiguration>

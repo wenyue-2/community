@@ -9,10 +9,10 @@ import java.util.List;
 @Data
 public class PageDTO{
     private List<QuestionDTO> questionDTOList;
-    private boolean hasPrevious;
-    private boolean hasFirstPage;
-    private boolean hasNext;
-    private boolean hasEndPage;
+    private Boolean hasPrevious;
+    private Boolean hasFirstPage;
+    private Boolean hasNext;
+    private Boolean hasEndPage;
     private Integer totalPages;
     private Integer currentPage;
     private List<Integer> pages;

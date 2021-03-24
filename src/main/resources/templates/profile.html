@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${sectionName}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/community.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js" type="application/javascript"></script>
+</head>
+<body>
+<div th:insert="~{navigation::nav}">
+</div>
+<div class="container-fluid main profile">
+    <div class="container-fluid main">
+        <div class="row">
+            <div class="col-lg-9 col-md-12 col-sm-12 col-cs-12">
+                <h2><span class="" aria-hidden="true" th:text="${sectionName}"></span></h2>
+                <hr/>
+                <div class="media" th:each="questionDTO : ${pageDTOS.questionDTOList}">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object img-rounded" th:src="${questionDTO.user.avatarUrl}" alt="无法显示">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading" th:text="${questionDTO.title}"></h4>
+                        <span th:text="${questionDTO.description}"></span>
+                        <br>
+                        <span class="text-desc"><span th:text="${questionDTO.commentCount}"></span>个回复·<span th:text="${questionDTO.viewCount}"></span>次浏览·<span th:text="${#dates.format(questionDTO.gmtCreate,'yyyy-MM-dd HH:mm')}"></span>小时前</span>
+                    </div>
+                </div>
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        <li th:class="${pageDTOS.hasPrevious == true} ? '': 'hidden'"><a th:href="@{/profile/questions(page=${pageDTOS.currentPage}-1)}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                        <li th:each="page : ${pageDTOS.pages}" th:class="${pageDTOS.currentPage == page} ? 'active' : ''">
+                            <a th:href="@{/profile/questions(page=${page})}" th:text="${page}"></a>
+                        </li>
+                        <li th:class="${pageDTOS.hasNext == true} ? '': 'hidden'"><a th:href="@{/profile/questions(page=${pageDTOS.currentPage}+1)}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                    </ul>
+                </nav>
+            </div>
+        <div class="col-lg-3 col-md-12 col-sm-12 col-cs-12">
+            <div class="list-group section">
+                <a href="/profile/questions" th:class="${section == 'question'} ? 'active list-group-item' : 'list-group-item'">我的问题</a>
+                <a href="/profile/replies" th:class="${section == 'reply'} ? 'active list-group-item' : 'list-group-item'">最新回复<span class="badge">14</span></a>
+                <a href="#" class="list-group-item">Cras justo odio</a>
+                <a href="#" class="list-group-item">Porta ac consectetur ac</a>
+                <a href="#" class="list-group-item">Vestibulum at eros</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>
