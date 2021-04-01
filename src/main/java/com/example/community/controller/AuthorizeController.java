@@ -15,18 +15,19 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
+import java.util.List;
 
 @Controller
 public class AuthorizeController {
 
     @Autowired
     private GithubProvider githubProvider;
-    @Value("${github.clientId}")
-    private String clientId;
-    @Value("${github.clientSecret}")
-    private String clientSecret;
-    @Value("${github.redirectUrl}")
-    private String redirectUrl;
+    @Value("${github.client_Id}")
+    private String client_id;
+    @Value("${github.client_secret}")
+    private String client_secret;
+    @Value("${github.redirect_url}")
+    private String redirect_url;
     @Autowired
     private UserMapper userMapper;
 
@@ -38,10 +39,10 @@ public class AuthorizeController {
                             HttpServletResponse response){
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setCode(code);
-        accessTokenDTO.setRedirectUrl(redirectUrl);
+        accessTokenDTO.setRedirect_url(redirect_url);
         accessTokenDTO.setState(state);
-        accessTokenDTO.setClientId(clientId);
-        accessTokenDTO.setClientSecret(clientSecret);
+        accessTokenDTO.setClient_id(client_id);
+        accessTokenDTO.setClient_secret(client_secret);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubUser = githubProvider.getUser(accessToken);
         if(githubUser != null){
@@ -50,7 +51,8 @@ public class AuthorizeController {
             String account_id = String.valueOf(githubUser.getId());
             UserExample userExample = new UserExample();
             userExample.createCriteria().andAccountIdEqualTo(account_id);
-            if((user = userMapper.selectByExample(userExample).get(0)) == null){
+            List<User> res;
+            if((res = userMapper.selectByExample(userExample)).size() == 0){
                 user = new User();
                 user.setAccountId(account_id);
                 user.setName(githubUser.getLogin());
@@ -62,14 +64,15 @@ public class AuthorizeController {
                 user.setAvatarUrl(githubUser.getAvatarUrl());
                 //这里需要刷新token，保证安全，此处进行了省略
                 userMapper.insert(user);
+            }else{
+                user = res.get(0);
             }
             request.getSession().setAttribute("user",user);
             response.addCookie(new Cookie("token",user.getToken()));
-            return "redirect:/";
         }else{
             //登录失败，重新登录
-            return "redirect:/";
         }
+        return "redirect:/";
     }
 
     @GetMapping("/logout")

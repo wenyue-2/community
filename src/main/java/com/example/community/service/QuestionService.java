@@ -1,7 +1,10 @@
 package com.example.community.service;
 
+import com.example.community.Exception.CustomizeErrorCode;
+import com.example.community.Exception.CustomizeException;
 import com.example.community.dto.PageDTO;
 import com.example.community.dto.QuestionDTO;
+import com.example.community.mapper.QuestionExtMapper;
 import com.example.community.mapper.QuestionMapper;
 import com.example.community.mapper.UserMapper;
 import com.example.community.model.Question;
@@ -19,6 +22,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 @Service
 public class QuestionService{
 
+    @Autowired
+    private QuestionExtMapper questionExtMapper;
     @Autowired
     private QuestionMapper questionMapper;
     @Autowired
@@ -65,6 +70,9 @@ public class QuestionService{
     public QuestionDTO getById(Integer id) {
         QuestionDTO questionDTO = new QuestionDTO();
         Question question = questionMapper.selectByPrimaryKey(id);
+        if(question == null){
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+        }
         User user = userMapper.selectByPrimaryKey(question.getCreator());
         questionDTO.setUser(user);
         BeanUtils.copyProperties(question,questionDTO);
@@ -75,7 +83,13 @@ public class QuestionService{
         if(question.getId() == null){
             questionMapper.insert(question);
         }else{
-            questionMapper.updateByPrimaryKey(question);
+            QuestionExample questionExample = new QuestionExample();
+            questionExample.createCriteria().andIdEqualTo(question.getId());
+            questionMapper.updateByExampleSelective(question,questionExample);
         }
+    }
+
+    public void incView(Integer id) {
+        questionExtMapper.incView(id);
     }
 }

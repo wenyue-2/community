@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="/css/community.css">
     <script type="text/javascript" src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js" type="application/javascript"></script>
+    <script type="text/javascript" src="/js/community.js"></script>
+    <script type="text/javascript" src="/js/moment.js"></script>
 </head>
 <body>
 <div th:insert="~{navigation::nav}">
@@ -17,7 +19,7 @@
     <div class="container-fluid main">
         <div class="row">
             <div class="col-lg-9 col-md-12 col-sm-12 col-cs-12">
-                <h3><span class="" aria-hidden="true" th:text="${questionDTO.title}"></span></h3>
+                <h3 class="question-title"><span class="" aria-hidden="true" th:text="${questionDTO.title}"></span></h3>
                 <span class="text-desc" >
                     作者:<span th:text="${questionDTO.user.name}"></span> |
                     浏览数:<span th:text="${questionDTO.viewCount}"></span> |
@@ -27,9 +29,100 @@
                 <div th:text="${questionDTO.description}">
                 </div>
                 <hr/>
-                <a th:href="@{'/publish/'+${questionDTO.id}}" class="community-menu">
-                    <span class="glyphicon glyphicon-pencil" aria-hidden="true" th:if="${session.user != null && session.user.id == questionDTO.creator}">编辑</span>
-                </a>
+                <div>
+                    <a th:href="@{'/publish/'+${questionDTO.id}}" class="community-menu">
+                        <span class="glyphicon glyphicon-pencil" aria-hidden="true" th:if="${session.user != null && session.user.id == questionDTO.creator}">编辑</span>
+                    </a>
+                </div>
+
+                <h4>
+                    <span th:text="${questionDTO.commentCount}"></span>个回复
+                </h4>
+                <hr class="comment-sp">
+                <div th:each="commentDTO : ${commentDTOS}" class="comments">
+                    <div class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object img-rounded" th:src="${commentDTO.user.avatarUrl}" alt="无法显示" style="height: 35px;width: 35px">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h5 class="media-heading">
+                                <span th:text="${commentDTO.user.name}"></span>
+                            </h5>
+                            <div th:text="${commentDTO.content}">
+                            </div>
+                            <div class="menu">
+                                <span class="glyphicon glyphicon-thumbs-up icon"></span>
+                                <span class="glyphicon glyphicon-comment icon" th:data-id="${commentDTO.id}" onclick="collapseComments(this)"></span>
+                                <span class="pull-right" th:text="${#dates.format(commentDTO.gmtCreate,'yyyy-MM-dd')}"></span>
+                            </div>
+                            <!--二级评论-->
+                            <div class="sub-comments collapse" th:id="${'comment-'+commentDTO.id}">
+                                <!--<div th:each="commentDTO : ${commentDTOS}" class="comments">
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="#">
+                                                <img class="media-object img-rounded" th:src="${commentDTO.user.avatarUrl}" alt="无法显示" style="height: 35px;width: 35px">
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <h5 class="media-heading">
+                                                <span th:text="${commentDTO.user.name}"></span>
+                                            </h5>
+                                            <div th:text="${commentDTO.content}">
+                                            </div>
+                                            <div class="menu">
+                                               &lt;!&ndash; <span class="glyphicon glyphicon-comment icon" th:data-id="${commentDTO.id}" onclick="collapseComments(this)"></span>&ndash;&gt;
+                                                <span class="pull-right" th:text="${#dates.format(commentDTO.gmtCreate,'yyyy-MM-dd')}"></span>
+                                            </div>
+                                           &lt;!&ndash; <div class="collapse" th:id="${'commit-'+commentDTO.id}">
+                                                二级评论
+                                            </div>&ndash;&gt;
+                                        </div>
+                                    </div>
+                                </div>-->
+                                <div>
+                                    <input type="text" class="form-control" placeholder="comment input" th:id="${'input-'+commentDTO.id}">
+                                    <button type="button" class="btn btn-success pull-right" onclick="comment(this)" th:data-id="${commentDTO.id}">评论</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-12 col-sm-12 col-cs-12" id="comment_section">
+                    <h4>
+                        提交回复
+                    </h4>
+                    <hr class="comment-sp">
+                    <div th:if="${session.user != null}">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object img-rounded" th:src="${session.user.avatarUrl}" alt="无法显示" style="height: 35px;width: 35px">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h5 class="media-heading">
+                                <span th:text="${session.user.name}"></span>
+                            </h5>
+                        </div>
+                    </div>
+                    <div th:unless="not ${session.user == null}">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object img-rounded" src = "/pic/people.jpg" alt="无法显示" style="height: 35px;width: 35px">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h5 class="media-heading">
+                                <span>游客</span>
+                            </h5>
+                        </div>
+                    </div>
+                    <input type="hidden" id = "question_id" th:value="${questionDTO.id}">
+                    <textarea class="form-control comment" rows="6" id = "content"></textarea>
+                    <button type="button" class="btn btn-success btn-comment" onclick="post()">回复</button>
+                </div>
 
             </div>
             <div class="col-lg-3 col-md-12 col-sm-12 col-cs-12">
@@ -37,7 +130,7 @@
                     <h4>发起人</h4>
                     <div class="media-left">
                         <a href="#">
-                            <img class="media-object img-rounded" th:src="${questionDTO.user.avatarUrl}" alt="无法显示">
+                            <img class="media-object img-rounded" th:src="${questionDTO.user.avatarUrl}" alt="无法显示" style="height: 35px;width: 35px">
                         </a>
                     </div>
                     <div class="media-body">
